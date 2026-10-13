@@ -61,6 +61,13 @@ public class BallController : MonoBehaviour
         Vector3 dir = new Vector3(Random.Range(-0.5f, 0.5f), 0f, 1f).normalized;
         rb.linearVelocity = dir * speed;
     }
+
+    public void ResetBall()
+    {
+        launched = false;
+        rb.linearVelocity = Vector3.zero;
+        rb.isKinematic = true;
+    }
     private void FixedUpdate()
     {
         if (!launched) return;
