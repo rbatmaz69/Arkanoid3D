@@ -1,7 +1,5 @@
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.WSA;
 
 public class BallController : MonoBehaviour
 {
@@ -12,16 +10,19 @@ public class BallController : MonoBehaviour
     [Header("Bewegung")]
     [SerializeField] private float speed = 8f;
     [SerializeField] private float minZShare = 0.3f;
+    [SerializeField] private float minXShare = 0.2f;
 
     private Rigidbody rb;
     private Vector3 startPosition;
     private Vector3 offsetToPaddle;
     private bool launched;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Vector3 lastVelocity;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
     }
+
     private void Start()
     {
         startPosition = transform.position;
@@ -34,7 +35,6 @@ public class BallController : MonoBehaviour
         rb.isKinematic = true;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         if (launched) return;
@@ -53,6 +53,7 @@ public class BallController : MonoBehaviour
             Launch();
         }
     }
+
     private void Launch()
     {
         launched = true;
@@ -67,7 +68,9 @@ public class BallController : MonoBehaviour
         launched = false;
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
+        lastVelocity = Vector3.zero;
     }
+
     private void FixedUpdate()
     {
         if (!launched) return;
@@ -84,6 +87,29 @@ public class BallController : MonoBehaviour
             dir = dir.normalized;
         }
 
+        if (Mathf.Abs(dir.x) < minXShare)
+        {
+            float sign = dir.x >= 0f ? 1f : -1f;
+            dir.x = minXShare * sign;
+            dir = dir.normalized;
+        }
+
         rb.linearVelocity = dir * speed;
+        lastVelocity = rb.linearVelocity;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!launched) return;
+
+        Vector3 normal = collision.GetContact(0).normal;
+        normal.y = 0f;
+        if (normal.sqrMagnitude < 0.0001f) return;
+        normal.Normalize();
+
+        Vector3 reflected = Vector3.Reflect(lastVelocity, normal);
+        reflected.y = 0f;
+
+        rb.linearVelocity = reflected.normalized * speed;
     }
 }
