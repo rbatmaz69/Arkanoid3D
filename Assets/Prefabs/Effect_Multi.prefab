@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7833836541513845051}
-  - component: {fileID: 3365074527089956069}
+  - component: {fileID: -1852309757213922127}
   m_Layer: 0
   m_Name: Effect_Multi
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3365074527089956069
+--- !u!114 &-1852309757213922127
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +41,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 473629207852565906}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45143761c73fc4543a56b6bc26408f50, type: 3}
+  m_Script: {fileID: 11500000, guid: 22c50a64851c4407fade815bf982f7ad, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GenericPowerUp
-  displayName: Multi-Ball
-  duration: 10
+  m_EditorClassIdentifier: Assembly-CSharp::MultiBallPowerUp
+  displayName: Power-Up
+  duration: 1
+  extraBallPrefab: {fileID: 792147534505686778, guid: b38314542e6d540a7babb9ff10f0edc2, type: 3}

@@ -12,11 +12,23 @@ public class BallController : MonoBehaviour
     [SerializeField] private float minZShare = 0.3f;
     [SerializeField] private float minXShare = 0.2f;
 
+    public static int ExtraCount;
+    public static bool MainLost;
+    public bool IsExtra { get; private set; }
+
     private Rigidbody rb;
     private Vector3 startPosition;
     private Vector3 offsetToPaddle;
     private bool launched;
     private Vector3 lastVelocity;
+    private bool removed;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        ExtraCount = 0;
+        MainLost = false;
+    }
 
     private void Awake()
     {
@@ -27,12 +39,18 @@ public class BallController : MonoBehaviour
     {
         startPosition = transform.position;
 
+        if (!IsExtra)
+        {
+            // Hauptball: Zähler sauber starten (z. B. nach Neustart)
+            ExtraCount = 0;
+            MainLost = false;
+            rb.isKinematic = true;
+        }
+
         if (paddle != null)
         {
             offsetToPaddle = transform.position - paddle.position;
         }
-
-        rb.isKinematic = true;
     }
 
     private void Update()
@@ -63,8 +81,39 @@ public class BallController : MonoBehaviour
         rb.linearVelocity = dir * speed;
     }
 
+    // Zusatzball: fliegt sofort los, klebt nie am Schläger
+    public void StartAsExtra(Vector3 direction)
+    {
+        IsExtra = true;
+        ExtraCount++;
+        paddle = null;
+        launched = true;
+        rb.isKinematic = false;
+        rb.linearVelocity = direction.normalized * speed;
+        lastVelocity = rb.linearVelocity;
+    }
+
+    // Zusatzball sauber entfernen
+    public void Remove()
+    {
+        if (removed) return;
+        removed = true;
+        if (IsExtra) ExtraCount--;
+        Destroy(gameObject);
+    }
+
     public void ResetBall()
     {
+        // Alle Zusatzbälle entfernen
+        BallController[] all = FindObjectsByType<BallController>(FindObjectsSortMode.None);
+        foreach (BallController b in all)
+        {
+            if (b != this && b.IsExtra) Destroy(b.gameObject);
+        }
+        ExtraCount = 0;
+        MainLost = false;
+
+        gameObject.SetActive(true);
         launched = false;
         rb.linearVelocity = Vector3.zero;
         rb.isKinematic = true;
