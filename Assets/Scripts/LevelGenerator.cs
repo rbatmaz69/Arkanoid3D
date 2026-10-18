@@ -13,6 +13,8 @@ public class LevelGenerator : MonoBehaviour
 
     [Header("Referenzen")]
     [SerializeField] private GameManager gameManager;
+    public int CurrentLevelNumber => currentLevel + 1;
+    public event System.Action<int> LevelChanged;
 
     private void OnEnable()
     {
@@ -40,6 +42,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         currentLevel++;
+        LevelChanged?.Invoke(CurrentLevelNumber);
         Generate(currentLevel);
         gameManager.ResumePlaying();
     }
