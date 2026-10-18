@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5114146848585129522}
-  - component: {fileID: 1702404116388466423}
+  - component: {fileID: 2722072366902975359}
   m_Layer: 0
   m_Name: Effect_Zeitlupe
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1702404116388466423
+--- !u!114 &2722072366902975359
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +41,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 3452263310212584971}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45143761c73fc4543a56b6bc26408f50, type: 3}
+  m_Script: {fileID: 11500000, guid: d9a8e918988a94f348f9ea9116eb360a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GenericPowerUp
-  displayName: Zeitlupe
+  m_EditorClassIdentifier: Assembly-CSharp::SlowMotionPowerUp
+  displayName: Power-Up
   duration: 8

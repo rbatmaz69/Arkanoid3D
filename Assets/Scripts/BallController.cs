@@ -14,6 +14,7 @@ public class BallController : MonoBehaviour
 
     public static int ExtraCount;
     public static bool MainLost;
+    public static float SpeedFactor = 1f;
     public bool IsExtra { get; private set; }
 
     private Rigidbody rb;
@@ -28,6 +29,7 @@ public class BallController : MonoBehaviour
     {
         ExtraCount = 0;
         MainLost = false;
+        SpeedFactor = 1f;
     }
 
     private void Awake()
@@ -44,6 +46,7 @@ public class BallController : MonoBehaviour
             // Hauptball: Zähler sauber starten (z. B. nach Neustart)
             ExtraCount = 0;
             MainLost = false;
+            SpeedFactor = 1f;
             rb.isKinematic = true;
         }
 
@@ -78,7 +81,7 @@ public class BallController : MonoBehaviour
         rb.isKinematic = false;
 
         Vector3 dir = new Vector3(Random.Range(-0.5f, 0.5f), 0f, 1f).normalized;
-        rb.linearVelocity = dir * speed;
+        rb.linearVelocity = dir * speed * SpeedFactor;
     }
 
     // Zusatzball: fliegt sofort los, klebt nie am Schläger
@@ -89,7 +92,7 @@ public class BallController : MonoBehaviour
         paddle = null;
         launched = true;
         rb.isKinematic = false;
-        rb.linearVelocity = direction.normalized * speed;
+        rb.linearVelocity = direction.normalized * speed * SpeedFactor;
         lastVelocity = rb.linearVelocity;
     }
 
@@ -143,7 +146,7 @@ public class BallController : MonoBehaviour
             dir = dir.normalized;
         }
 
-        rb.linearVelocity = dir * speed;
+        rb.linearVelocity = dir * speed * SpeedFactor;
         lastVelocity = rb.linearVelocity;
     }
 
@@ -159,6 +162,6 @@ public class BallController : MonoBehaviour
         Vector3 reflected = Vector3.Reflect(lastVelocity, normal);
         reflected.y = 0f;
 
-        rb.linearVelocity = reflected.normalized * speed;
+        rb.linearVelocity = reflected.normalized * speed * SpeedFactor;
     }
 }
