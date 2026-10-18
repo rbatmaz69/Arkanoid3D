@@ -127,5 +127,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpecialBlock
   points: 200
   powerUpPrefabs:
-  - {fileID: 255302281660339082, guid: 2eafed0c28e9d47fd999343c42803301, type: 3}
+  - {fileID: 6756299400333965356, guid: 05a4266a9a7264de4ae155cd4b582baf, type: 3}
   dropHeight: 0.65

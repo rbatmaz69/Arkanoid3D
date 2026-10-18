@@ -19,7 +19,7 @@ PrefabInstance:
     - target: {fileID: 6457537115236270858, guid: 2eafed0c28e9d47fd999343c42803301, type: 3}
       propertyPath: effectPrefab
       value: 
-      objectReference: {fileID: 5008374082196050676, guid: cf428e2a54472494eab5a67939cde8ff, type: 3}
+      objectReference: {fileID: -3481071547604052150, guid: cf428e2a54472494eab5a67939cde8ff, type: 3}
     - target: {fileID: 6553136791771254610, guid: 2eafed0c28e9d47fd999343c42803301, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

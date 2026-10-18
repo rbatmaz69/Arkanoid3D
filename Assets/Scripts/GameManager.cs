@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("Start-Werte")]
     [SerializeField] private int startLives = 3;
+    [SerializeField] private int maxLives = 4;
+    [SerializeField] private int bonusPoints = 500;
     [SerializeField] private BodensensorTrigger bodensensor;
     [SerializeField] private BallController ball;
 
@@ -72,6 +74,20 @@ public class GameManager : MonoBehaviour
         Score += points;
         ScoreChanged?.Invoke(Score);
         Debug.Log("Punkte: " + Score);
+    }
+
+    public void AddLife()
+    {
+        if (State != GameState.Playing) return;
+
+        if (Lives >= maxLives)
+        {
+            AddScore(bonusPoints);
+            return;
+        }
+
+        Lives++;
+        LivesChanged?.Invoke(Lives);
     }
 
     public void RegisterBlock()

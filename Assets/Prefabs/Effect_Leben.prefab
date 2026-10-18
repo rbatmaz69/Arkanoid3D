@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1472307461777629839}
-  - component: {fileID: 5008374082196050676}
+  - component: {fileID: -3481071547604052150}
   m_Layer: 0
   m_Name: Effect_Leben
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5008374082196050676
+--- !u!114 &-3481071547604052150
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +41,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1532757045905480140}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45143761c73fc4543a56b6bc26408f50, type: 3}
+  m_Script: {fileID: 11500000, guid: 86c28d28430564ab88fcb8d50010f79e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GenericPowerUp
-  displayName: Extraleben
-  duration: 2
+  m_EditorClassIdentifier: Assembly-CSharp::ExtraLifePowerUp
+  displayName: Power-Up
+  duration: 0.1
