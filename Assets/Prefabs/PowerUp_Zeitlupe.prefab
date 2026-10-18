@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4530280320776164808, guid: 198da4a81f8314514b5b728626f6395d, type: 3}
+      propertyPath: effectPrefab
+      value: 
+      objectReference: {fileID: 1702404116388466423, guid: cefdeb68e18ac4ed69f098b632f4fab4, type: 3}
     - target: {fileID: 7262065580578391368, guid: 198da4a81f8314514b5b728626f6395d, type: 3}
       propertyPath: m_Name
       value: PowerUp_Zeitlupe
