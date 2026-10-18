@@ -14,10 +14,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BodensensorTrigger bodensensor;
     [SerializeField] private BallController ball;
 
-    public int Lives {get; private set;}
-    public int Score {get; private set;}
-    public GameState State {get; private set;}
+    public int Lives { get; private set; }
+    public int Score { get; private set; }
+    public GameState State { get; private set; }
     private int blocksRemaining;
+    public int BlocksRemaining => blocksRemaining;
+    public event System.Action<int> BlocksRemainingChanged;
 
     public event System.Action<int> LivesChanged;
     public event System.Action<int> ScoreChanged;
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
 
     private void OnDisable()
     {
-        if(bodensensor != null) bodensensor.BallLost -= OnBallLost;
+        if (bodensensor != null) bodensensor.BallLost -= OnBallLost;
     }
 
     private void OnBallLost()
@@ -75,6 +77,7 @@ public class GameManager : MonoBehaviour
     public void RegisterBlock()
     {
         blocksRemaining++;
+        BlocksRemainingChanged?.Invoke(blocksRemaining);
     }
 
     public void BlockDestroyed()
@@ -82,12 +85,25 @@ public class GameManager : MonoBehaviour
         if (State != GameState.Playing) return;
 
         blocksRemaining--;
+        BlocksRemainingChanged?.Invoke(blocksRemaining);
+        Debug.Log("Noch " + blocksRemaining + " Blöcke");
 
-        if(blocksRemaining <= 0)
+        if (blocksRemaining <= 0)
         {
             State = GameState.LevelComplete;
             StateChanged?.Invoke(State);
             Debug.Log("Level geschafft");
+        }
+    }
+
+    public void ResumePlaying()
+    {
+        State = GameState.Playing;
+        StateChanged?.Invoke(State);
+
+        if (ball != null)
+        {
+            ball.ResetBall();
         }
     }
 
