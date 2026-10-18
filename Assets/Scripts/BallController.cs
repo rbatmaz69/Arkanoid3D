@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,12 +18,14 @@ public class BallController : MonoBehaviour
     public static float SpeedFactor = 1f;
     public bool IsExtra { get; private set; }
 
-    private Rigidbody rb;
+    private Vector3 velocity;
+    private float radius;
     private Vector3 startPosition;
     private Vector3 offsetToPaddle;
     private bool launched;
-    private Vector3 lastVelocity;
     private bool removed;
+
+    private static readonly List<BoxBody> hitBuffer = new List<BoxBody>();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
@@ -34,7 +37,8 @@ public class BallController : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        // Kugel mit Radius 0.5 im lokalen Raum, wie vorher der SphereCollider
+        radius = 0.5f * transform.lossyScale.x;
     }
 
     private void Start()
@@ -47,7 +51,6 @@ public class BallController : MonoBehaviour
             ExtraCount = 0;
             MainLost = false;
             SpeedFactor = 1f;
-            rb.isKinematic = true;
         }
 
         if (paddle != null)
@@ -78,10 +81,9 @@ public class BallController : MonoBehaviour
     private void Launch()
     {
         launched = true;
-        rb.isKinematic = false;
 
         Vector3 dir = new Vector3(Random.Range(-0.5f, 0.5f), 0f, 1f).normalized;
-        rb.linearVelocity = dir * speed * SpeedFactor;
+        velocity = dir * speed * SpeedFactor;
     }
 
     // Zusatzball: fliegt sofort los, klebt nie am Schläger
@@ -91,9 +93,7 @@ public class BallController : MonoBehaviour
         ExtraCount++;
         paddle = null;
         launched = true;
-        rb.isKinematic = false;
-        rb.linearVelocity = direction.normalized * speed * SpeedFactor;
-        lastVelocity = rb.linearVelocity;
+        velocity = direction.normalized * speed * SpeedFactor;
     }
 
     // Zusatzball sauber entfernen
@@ -118,16 +118,41 @@ public class BallController : MonoBehaviour
 
         gameObject.SetActive(true);
         launched = false;
-        rb.linearVelocity = Vector3.zero;
-        rb.isKinematic = true;
-        lastVelocity = Vector3.zero;
+        velocity = Vector3.zero;
     }
 
-    private void FixedUpdate()
+    // LateUpdate: der Schläger hat sich in Update schon bewegt
+    private void LateUpdate()
     {
         if (!launched) return;
 
-        Vector3 v = rb.linearVelocity;
+        float dt = Time.deltaTime;
+        if (dt <= 0f) return;
+
+        // Teilschritte, damit der Ball auch bei langen Frames nicht durch Wände tunnelt
+        float distance = velocity.magnitude * dt;
+        int steps = Mathf.Max(1, Mathf.CeilToInt(distance / (radius * 0.5f)));
+        float stepDt = dt / steps;
+
+        for (int i = 0; i < steps; i++)
+        {
+            transform.position += velocity * stepDt;
+
+            ResolveCollisions();
+            NormalizeVelocity();
+
+            BodensensorTrigger sensor = BodensensorTrigger.Instance;
+            if (sensor != null) sensor.Check(this, new Vector2(transform.position.x, transform.position.z), radius);
+
+            // Ball wurde entfernt, deaktiviert oder zurückgesetzt
+            if (removed || !launched || !gameObject.activeSelf) return;
+        }
+    }
+
+    // Konstante Geschwindigkeit, Y bleibt 0, Richtung nie zu flach oder zu steil
+    private void NormalizeVelocity()
+    {
+        Vector3 v = velocity;
         v.y = 0f;
         if (v.sqrMagnitude < 0.0001f) return;
 
@@ -146,22 +171,55 @@ public class BallController : MonoBehaviour
             dir = dir.normalized;
         }
 
-        rb.linearVelocity = dir * speed * SpeedFactor;
-        lastVelocity = rb.linearVelocity;
+        velocity = dir * speed * SpeedFactor;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void ResolveCollisions()
     {
-        if (!launched) return;
+        Vector3 pos = transform.position;
+        Vector2 p = new Vector2(pos.x, pos.z);
 
-        Vector3 normal = collision.GetContact(0).normal;
-        normal.y = 0f;
-        if (normal.sqrMagnitude < 0.0001f) return;
-        normal.Normalize();
+        // Wände und Blöcke (Kopie, weil Treffer BoxBodys deaktivieren)
+        hitBuffer.Clear();
+        hitBuffer.AddRange(CollisionWorld.Solids);
 
-        Vector3 reflected = Vector3.Reflect(lastVelocity, normal);
+        foreach (BoxBody body in hitBuffer)
+        {
+            if (!body.isActiveAndEnabled) continue;
+
+            body.GetRect(out Vector2 min, out Vector2 max);
+            if (!CollisionWorld.CircleVsRect(p, radius, min, max, out Vector2 normal, out float penetration)) continue;
+
+            p += normal * penetration;
+            Bounce(normal);
+
+            IBallHitReceiver receiver = body.GetComponent<IBallHitReceiver>();
+            if (receiver != null) receiver.OnBallHit(this);
+        }
+
+        // Schläger
+        PaddleController pad = PaddleController.Instance;
+        if (pad != null)
+        {
+            pad.GetSegment(out Vector2 a, out Vector2 b);
+            if (CollisionWorld.CircleVsCapsule(p, radius, a, b, pad.CapsuleRadius, out Vector2 normal, out float penetration))
+            {
+                p += normal * penetration;
+                Bounce(normal);
+            }
+        }
+
+        transform.position = new Vector3(p.x, pos.y, p.y);
+    }
+
+    // Nur reflektieren, wenn der Ball in die Fläche hineinfliegt (verhindert Doppelreflexion an Ecken)
+    private void Bounce(Vector2 normal)
+    {
+        Vector3 n = new Vector3(normal.x, 0f, normal.y);
+        if (Vector3.Dot(velocity, n) >= 0f) return;
+
+        Vector3 reflected = Vector3.Reflect(velocity, n);
         reflected.y = 0f;
-
-        rb.linearVelocity = reflected.normalized * speed * SpeedFactor;
+        velocity = reflected.normalized * speed * SpeedFactor;
     }
 }

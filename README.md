@@ -45,7 +45,7 @@ Bauklotz ist ein 3D-Breakout (Arkanoid-Klon) im Bauhaus-Stil. Der Spieler lenkt 
 - Unity 6 mit Universal Render Pipeline (URP)
 - Neues Input System
 - C#: Events, Vererbung (Basisklasse `PowerUp`), ScriptableObjects, Prefabs und Prefab-Varianten
-- Physik: Rigidbody, eigenes Abprallen per `Vector3.Reflect`, konstante Ballgeschwindigkeit
+- Eigene Kollisionsberechnung ohne Unity-Physik (kein Rigidbody, keine Collider): Kreis gegen Rechteck bzw. Kapsel auf der X/Z-Ebene, Abprallen per `Vector3.Reflect`, konstante Ballgeschwindigkeit
 - TextMeshPro und uGUI
 
 ## Besondere Herausforderungen / Lessons Learned
@@ -55,16 +55,23 @@ Bauklotz ist ein 3D-Breakout (Arkanoid-Klon) im Bauhaus-Stil. Der Spieler lenkt 
 
 **Prefabs gezielt einsetzen**
 - Prefab-Varianten statt Kopien: Block_Senf und Block_Salbei sind Varianten von Block_Rot und überschreiben nur das Material, ebenso die Power-Up-Münzen. Änderungen am Original gelten automatisch für alle Varianten.
-- Zusammengesetzte Objekte (Schläger aus Körper und Kappen, stabiler Block mit drei Ringen) sind ein Prefab mit einem gemeinsamen Collider am Eltern-Objekt.
+- Zusammengesetzte Objekte (Schläger aus Körper und Kappen, stabiler Block mit drei Ringen) sind ein Prefab mit einer gemeinsamen Kollisionsform (`BoxBody`) am Eltern-Objekt.
 - Prefabs können keine Szenenobjekte referenzieren, deshalb suchen Blöcke den `GameManager` selbst. Der `LevelGenerator` erzeugt das ganze Raster per Script aus diesen Prefabs.
+
+**Power-Up-Auswahl**
+- Es gibt keine feste Reihenfolge. Jeder Halbkugel-Block wählt beim Zerstören zufällig eines seiner vier Power-Ups (gleich wahrscheinlich) und lässt es fallen. Der Spieler sammelt es mit dem Schläger ein.
+- Erneutes Einsammeln von Breit oder Zeitlupe ersetzt den laufenden Effekt, statt ihn zu stapeln. Die Laufzeit startet neu.
 
 **Canvas und UI-Darstellung**
 - Canvas mit Scale With Screen Size (1920×1080) und Anchor-Presets, damit das HUD bei jeder Auflösung an seinem Platz bleibt.
 - Wiederverwendbare UI-Prefabs (Panel, Chip, Button in drei Varianten) im gleichen Stil: abgerundete Fläche, Kontur und harter Schlagschatten, nur mit Unity-Bordmitteln (Image, Outline, Shadow).
 - Fortschrittsbalken über `Image Type: Filled`, Zahlen deutsch formatiert, Overlays mit abdunkelndem Hintergrund.
 
-**Physik und Spiellogik**
-- Abprallen ohne Physics Material selbst berechnet, inklusive Schutz gegen flache und senkrechte Dauerschleifen.
+**Kollisionen ohne Physik-Engine**
+- Das Spiel läuft effektiv in der X/Z-Ebene, deshalb reicht 2D-Geometrie: Der Ball ist ein Kreis, Wände, Blöcke, Bodensensor und Power-Ups sind achsparallele Rechtecke (`BoxBody`), der Schläger ist eine Kapsel (Strecke plus Radius, `PaddleController`). Die Mathematik steckt in `CollisionWorld`.
+- Der `BallController` bewegt sich selbst und teilt jeden Frame in kleine Schritte (höchstens ein halber Ballradius), damit er auch bei langen Frames nicht durch Wände tunnelt. Bei einer Überlappung wird er entlang der Normale herausgeschoben und reflektiert, aber nur, wenn er in die Fläche hineinfliegt. So gibt es an Ecken keine doppelte Reflexion.
+- Blöcke reagieren über das Interface `IBallHitReceiver`, der Bodensensor wird vom Ball nach jedem Schritt geprüft, Power-Ups prüfen selbst, ob sie den Schläger berühren. Pause funktioniert weiter über `Time.timeScale`, weil alles mit `Time.deltaTime` rechnet.
+- Abprallen selbst berechnet, inklusive Schutz gegen flache und senkrechte Dauerschleifen.
 - Multi-Ball: Leben wird erst abgezogen, wenn der letzte Ball verloren ist.
 - Kommunikation zwischen Spiellogik und HUD über Events, damit sich die Scripts nicht gegenseitig kennen müssen.
 

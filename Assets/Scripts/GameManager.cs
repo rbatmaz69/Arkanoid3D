@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     public int Lives { get; private set; }
     public int Score { get; private set; }
     public GameState State { get; private set; }
+    public int HighScore { get; private set; }
+    public event System.Action<int> HighScoreChanged;
     private int blocksRemaining;
     public int BlocksRemaining => blocksRemaining;
     public event System.Action<int> BlocksRemainingChanged;
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
         Lives = startLives;
         Score = 0;
         State = GameState.Playing;
+        HighScore = PlayerPrefs.GetInt("HighScore", 0);
 
         Debug.Log("Leben: " + Lives + ", Punkte: " + Score);
     }
@@ -73,6 +76,13 @@ public class GameManager : MonoBehaviour
 
         Score += points;
         ScoreChanged?.Invoke(Score);
+        if (Score > HighScore)
+        {
+            HighScore = Score;
+            PlayerPrefs.SetInt("HighScore", HighScore);
+            PlayerPrefs.Save();
+            HighScoreChanged?.Invoke(HighScore);
+        }
         Debug.Log("Punkte: " + Score);
     }
 

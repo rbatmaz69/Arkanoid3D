@@ -1,13 +1,30 @@
 using UnityEngine;
 
+[RequireComponent(typeof(BoxBody))]
 public class BodensensorTrigger : MonoBehaviour
 {
+    public static BodensensorTrigger Instance { get; private set; }
+
     public event System.Action BallLost;
 
-    private void OnTriggerEnter(Collider other)
+    private BoxBody zone;
+
+    private void Awake()
     {
-        BallController ball = other.GetComponent<BallController>();
-        if (ball == null) return;
+        Instance = this;
+        zone = GetComponent<BoxBody>();
+        zone.Solid = false; // Zone, kein Hindernis: der Ball soll hindurchfliegen
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
+
+    // Wird vom Ball nach jedem Bewegungsschritt aufgerufen (ersetzt OnTriggerEnter)
+    public void Check(BallController ball, Vector2 ballCenter, float ballRadius)
+    {
+        if (!zone.Overlaps(ballCenter, ballRadius)) return;
 
         // Zusatzball: kein Lebensverlust
         if (ball.IsExtra)

@@ -82,7 +82,8 @@ public class MenuController : MonoBehaviour
             Time.timeScale = 0f;
             dimmer.SetActive(true);
             panelGameOver.SetActive(true);
-            gameOverPunkte.text = "ENDPUNKTE " + gameManager.Score.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("de-DE"));
+            gameOverPunkte.text = "ENDPUNKTE " + gameManager.Score.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("de-DE"))
+            + "\nHIGHSCORE " + gameManager.HighScore.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("de-DE"));
         }
         else if (state == GameState.LevelComplete)
         {

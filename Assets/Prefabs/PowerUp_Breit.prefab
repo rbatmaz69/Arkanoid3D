@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 7052897846024216053}
   - component: {fileID: 7634089994335174701}
   - component: {fileID: 8203850738127851196}
-  - component: {fileID: -2386404769205793126}
   - component: {fileID: 2510202115568346340}
+  - component: {fileID: 4335611764315605311}
   m_Layer: 0
   m_Name: PowerUp_Breit
   m_TagString: Untagged
@@ -107,27 +107,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpFall
   fallSpeed: 3
   killZ: -9
---- !u!65 &-2386404769205793126
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8701170388653814884}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.0000001, y: 1, z: 1.0000002}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2510202115568346340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,3 +121,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpPickup
   effectPrefab: {fileID: 7869920247685315241, guid: 3e3992e067d38472986efe15187dcb36, type: 3}
   spinSpeed: 120
+--- !u!114 &4335611764315605311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8701170388653814884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb4dc1bddf03497d92cf446e7b3001a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoxBody
+  center: {x: 0, y: 0, z: 0}
+  size: {x: 1, y: 1, z: 1}
+  solid: 1

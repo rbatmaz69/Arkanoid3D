@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class Block : MonoBehaviour
+[RequireComponent(typeof(BoxBody))]
+public class Block : MonoBehaviour, IBallHitReceiver
 {
     [Header("Werte")]
     [SerializeField] private int points = 100;
@@ -18,10 +19,9 @@ public class Block : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void OnBallHit(BallController ball)
     {
         if(destroyed) return;
-        if(collision.collider.GetComponent<BallController>() == null) return;
 
         destroyed = true;
 
@@ -31,6 +31,7 @@ public class Block : MonoBehaviour
             gameManager.BlockDestroyed();
         }
 
+        GetComponent<BoxBody>().enabled = false;
         Destroy(gameObject);
     }
 }
