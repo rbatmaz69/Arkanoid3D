@@ -126,8 +126,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0000001, y: 2, z: 1.0000002}
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  m_Size: {x: 1.0000001, y: 1, z: 1.0000002}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2510202115568346340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,5 +140,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd98c3ad15bfd428987a7cc89f09dce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpPickup
-  effectPrefab: {fileID: 5891838883582346696, guid: 3e3992e067d38472986efe15187dcb36, type: 3}
+  effectPrefab: {fileID: 7869920247685315241, guid: 3e3992e067d38472986efe15187dcb36, type: 3}
   spinSpeed: 120
