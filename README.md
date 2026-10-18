@@ -1,6 +1,6 @@
 # Bauklotz – Breakout aus Grundformen
 
-<Refik Bilal Batmaz> (<215807>)
+Refik Bilal Batmaz 215807
 
 Unity Version: 6000.6.3f1 (Unity 6.6)
 
